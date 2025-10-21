@@ -8,14 +8,18 @@ import com.project.pharmacy_project.dto.DrugReadOnlyDto;
 import com.project.pharmacy_project.mapper.Mapper;
 import com.project.pharmacy_project.model.Drug;
 import com.project.pharmacy_project.model.static_data.Category;
+import com.project.pharmacy_project.model.static_data.Ingredient;
 import com.project.pharmacy_project.repository.CategoryRepository;
 import com.project.pharmacy_project.repository.DrugRepository;
+import com.project.pharmacy_project.repository.IngredientRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service layer for handling business logic related to Drugs.
@@ -32,6 +36,7 @@ public class DrugService {
 
     private final DrugRepository drugRepository;
     private final CategoryRepository categoryRepository;
+    private final IngredientRepository ingredientRepository;
     private final Mapper mapper;
 
     /**
@@ -60,7 +65,18 @@ public class DrugService {
             throw new AppObjectIllegalStateException("You cannot insert a new drug with quantity: " + insertDto.getQuantity() + ". (Min value: 1)");
         }
 
-        Drug drug = drugRepository.save(mapper.mapToDrugEntity(insertDto, category));
+        Set<Ingredient> ingredients = new HashSet<>(ingredientRepository.findAllById(insertDto.getIngredientIds()));
+
+        // A safer way to check for the ingredients.
+//        Set<Long> ingredientIds = insertDto.getIngredientIds();
+//        List<Ingredient> foundIngredients = ingredientRepository.findAllById(ingredientIds);
+//
+//        if (foundIngredients.size() != ingredientIds.size()) {
+//            throw new AppObjectNotFoundException("Some ingredients were not found.");
+//        }
+
+
+        Drug drug = drugRepository.save(mapper.mapToDrugEntity(insertDto, category, ingredients));
 
         return mapper.mapToDrugReadOnlyDto(drug );
     }
