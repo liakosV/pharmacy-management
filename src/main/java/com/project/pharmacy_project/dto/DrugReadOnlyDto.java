@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -16,5 +17,8 @@ public class DrugReadOnlyDto {
     private String name;
     private BigDecimal price;
     private int quantity;
+    private int toOrder;
+    private boolean overTheCounter;
+    private Set<IngredientReadOnlyDto> ingredients;
     private CategoryReadOnlyDto category;
 }
