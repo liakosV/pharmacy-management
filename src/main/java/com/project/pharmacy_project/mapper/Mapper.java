@@ -4,10 +4,14 @@ import com.project.pharmacy_project.dto.*;
 import com.project.pharmacy_project.model.Drug;
 import com.project.pharmacy_project.model.StockMovement;
 import com.project.pharmacy_project.model.static_data.Category;
+import com.project.pharmacy_project.model.static_data.Ingredient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -64,6 +68,11 @@ public class Mapper {
         dto.setName(drug.getName());
         dto.setPrice(drug.getPrice());
         dto.setQuantity(drug.getQuantity());
+        dto.setToOrder(drug.getToOrder());
+        dto.setOverTheCounter(drug.isOverTheCounter());
+        dto.setIngredients(drug.getIngredients() != null
+                ? mapToIngredientReadOnlyDtos(drug.getIngredients())
+                : Collections.emptySet());
         dto.setCategory(drug.getCategory() != null
                 ? mapToCategoryReadOnlyDto(drug.getCategory())
                 : null);
@@ -79,12 +88,15 @@ public class Mapper {
      * @param category the Category entity to assign to the Drug
      * @return the mapped Drug entity
      */
-    public Drug mapToDrugEntity(DrugInsertDto insertDto, Category category) {
+    public Drug mapToDrugEntity(DrugInsertDto insertDto, Category category, Set<Ingredient> ingredients) {
         Drug drug = new Drug();
 
         drug.setName(insertDto.getName());
         drug.setPrice(insertDto.getPrice());
         drug.setQuantity(insertDto.getQuantity());
+        drug.setToOrder(insertDto.getToOrder());
+        drug.setIngredients(ingredients);
+        drug.setOverTheCounter(insertDto.isOverTheCounter());
         drug.setCategory(category);
 
         return drug;
@@ -128,5 +140,33 @@ public class Mapper {
         stockMovement.setMovementDate(LocalDate.now());
 
         return stockMovement;
+    }
+
+    public IngredientReadOnlyDto mapToIngredientReadOnlyDto(Ingredient ingredient) {
+        if (ingredient == null) return  null;
+
+        var dto = new IngredientReadOnlyDto();
+
+        dto.setId(ingredient.getId());
+        dto.setName(ingredient.getName());
+
+        return dto;
+    }
+
+    public Set<IngredientReadOnlyDto> mapToIngredientReadOnlyDtos(Set<Ingredient> ingredients) {
+        if (ingredients == null) return Collections.emptySet();
+
+        return ingredients.stream()
+                .map(this::mapToIngredientReadOnlyDto)
+                .collect(Collectors.toSet());
+
+    }
+
+    public Ingredient mapToIngredientEntity(IngredientInsertDto insertDto) {
+        Ingredient ingredient = new Ingredient();
+
+        ingredient.setName(insertDto.getName());
+
+        return ingredient;
     }
 }
