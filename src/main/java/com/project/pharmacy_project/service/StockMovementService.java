@@ -63,6 +63,10 @@ public class StockMovementService {
             drug.setQuantity(newQuantity);
         }
 
+        if (drug.getQuantity() < drug.getToOrder()) {
+            System.out.println("You need to order new stock for the " + drug.getName() + ".");
+        }
+
         // Save movement (drug will be updated automatically because of transactional context)
         stockMovementRepository.save(stockMovement);
 
