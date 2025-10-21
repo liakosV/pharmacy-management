@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +24,16 @@ public class DrugInsertDto {
     @NotNull(message = "The quantity must not be null.")
     @Min(value = 0, message = "Quantity cannot be negative.")
     private int quantity;
+
+    @NotNull(message = "The to order must not be null.")
+    @Min(value = 0, message = "To order cannot be negative.")
+    private int toOrder;
+
+    @NotNull(message = "The over the counter must not be null.")
+    private boolean overTheCounter;
+
+    @NotNull(message = "The ingredients must not be null.")
+    private Set<Long> ingredientIds;
 
     @NotNull(message = "The category must not be null.")
     private Long categoryId;
